@@ -18,6 +18,7 @@ from Services.Plantas.plantasCat_service import PlantasCat_service
 from Services.Plagas.plagas_service import Plagas_service
 from Services.PlagxPlants.plagxplants_service import Plagxplants_service
 from Services.User.user_service import User_service
+from Services.Plantaciones.plantaciones_service import Plantaciones_service
 
 
 class Container(containers.DeclarativeContainer):
@@ -27,7 +28,9 @@ class Container(containers.DeclarativeContainer):
             "Controllers.Plantas.plantasCat_controller",
             "Controllers.Plantas.plantas_controller",
             "Controllers.Plagas.plagas_controller",
-            "Controllers.PlagXPlants.plagxplants_controller"
+            "Controllers.PlagXPlants.plagxplants_controller",
+            "Controllers.Plantaciones.plantaciones_controller"
+            
             
             
         ]
@@ -98,7 +101,7 @@ class Container(containers.DeclarativeContainer):
 
     plagas_service = providers.Factory(
         Plagas_service,
-        repository=generic_repository_plantas
+        repository=generic_repository_plags
     )
      
     generic_repository_plagsxplants = providers.Factory(
@@ -110,4 +113,15 @@ class Container(containers.DeclarativeContainer):
     plagsxplants_service = providers.Factory(
         Plagxplants_service,
         repository=generic_repository_plagsxplants
+    )
+
+    generic_repository_plantaciones = providers.Factory(
+        SqlAlchemyGenericRepository,
+        db_context=db.provided,
+        entity=Plants_mp
+    )
+
+    plantaciones_service = providers.Factory(
+        Plantaciones_service,
+        repository=generic_repository_plantaciones
     )

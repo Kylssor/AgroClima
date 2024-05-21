@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class User_info_schema(BaseModel):
-    id: Optional[uuid.UUID] = Field(primary_key=True)
+    id: Optional[uuid.UUID] = Field(primary_key=True, unique=True)
     name: str = Field(default=None, nullable=False, max_length= 45)
     last_name: str = Field(default=None, nullable=False)
     email: str = Field(default=None, nullable=False, max_length= 100)

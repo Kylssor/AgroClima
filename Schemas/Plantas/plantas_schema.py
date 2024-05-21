@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class Plantas_schema(BaseModel):
-    id: Optional[uuid.UUID] = Field(default=None, nullable=True)
+    id: Optional[uuid.UUID] = Field(default=None, nullable=True, unique=True, )
     name: str = Field(default=None, nullable=False, max_length= 50)
     description: str = Field(default=None, nullable=False, max_length= 100)
     recom: str = Field(default=None, nullable=False)
