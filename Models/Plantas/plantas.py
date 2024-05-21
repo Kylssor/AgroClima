@@ -11,5 +11,5 @@ class Plantas(Base_Model, table=True):
     recom: str = Field(default=None, nullable=False, max_length= 100)
     plantas_cat_id: uuid.UUID = Field(default=None, nullable=False, foreign_key="plantas_cat.id")
 
-    Plantes_Cat: Optional[Plantas_Cat] = Relationship(back_populates="plantas")
+    plantas_Cat: Optional[Plantas_Cat] = Relationship(back_populates="plantas")
     

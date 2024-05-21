@@ -5,8 +5,9 @@ from pydantic import BaseModel, Field
 
 
 class PlagxPlants_schema(BaseModel):
-    Plagas_id: Optional[uuid.UUID] = Field(default=None, nullable=True)
-    Plantas_id: uuid.UUID = Field(default=None, nullable=False)
+    id: Optional[uuid.UUID] = Field(default=None, nullable=True, unique=True, )
+    plagas_id: Optional[uuid.UUID] = Field(default=None, nullable=True)
+    plantas_id: uuid.UUID = Field(default=None, nullable=False)
     
     class Config:
         json_schema_extra = {

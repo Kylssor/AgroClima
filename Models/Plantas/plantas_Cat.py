@@ -8,4 +8,4 @@ if TYPE_CHECKING:
 class Plantas_Cat(Base_Model, table=True):
     name: str = Field(default=None, nullable=False, max_length= 50)
 
-    Plantas: list["Plantas"] = Relationship(back_populates="plantes_Cat")
+    plantas: list["Plantas"] = Relationship(back_populates="plantas_Cat")

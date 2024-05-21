@@ -38,6 +38,7 @@ class Plagas_service():
         Uuid_helper.check_valid_uuid(data.id)
         
         entity = Plags(
+            id=data.id,
             name = data.name,
             description=data.description,
             recom=data.recom,

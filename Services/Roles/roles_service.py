@@ -1,50 +1,47 @@
 import uuid
 from Contracts.abc_generic_repository import AbcGenericRepository
 from Helpers.uuid_helper import Uuid_helper
-from Models.Plantas.plantas import Plantas
-from Schemas.Plantas.plantas_schema import Plantas_schema
+from Models.Roles.roles import Roles
+from Schemas.Roles.roles_schema import Roles_schema
 
 
-class Plantas_service():
+class Roles_service():
     
     def __init__(
         self,
-        repository: AbcGenericRepository[Plantas]
+        repository: AbcGenericRepository[Roles]
     ):
         self.repository = repository
 
 
-    def get_all(self)-> list[Plantas]:
+    def get_all(self)-> list[Roles]:
         return self.repository.read_by_options()
 
 
-    def get_by_id(self, id: uuid.UUID) -> Plantas:
+    def get_by_id(self, id: uuid.UUID) -> Roles:
         Uuid_helper.check_valid_uuid(id)
         
         return self.repository.read_by_id(id)
 
 
-    def create(self, data: Plantas_schema) -> Plantas:
-        entity = Plantas(
-            id=data.id,
+    def create(self, data: Roles_schema) -> Roles:
+        entity = Roles(
             name = data.name,
-            description=data.description,
-            recom=data.recom,
-            plantascat=data.plantascat_id
+            user=data.user_id,
+            rolesty=data.rolesty_id
         )
 
         return self.repository.add(entity)
 
 
-    def update(self, data: Plantas_schema) -> Plantas:
+    def update(self, data: Roles_schema) -> Roles:
         Uuid_helper.check_valid_uuid(data.id)
         
-        entity = Plantas(
+        entity = Roles(
             id=data.id,
             name = data.name,
-            description=data.description,
-            recom=data.recom,
-            plantascat=data.plantascat_id
+            user=data.user_id,
+            rolesty=data.rolesty_id
         )
 
         return self.repository.update(entity)

@@ -5,6 +5,7 @@ from Config.project_config import Project_config
 from Models.Context.sqlalchemy_context import SqlalchemyContext
 from Models.Plantas.plantas import Plantas
 from Models.Plantas.plantas_Cat import Plantas_Cat
+from Models.Roles.roles import Roles
 from Models.Repository.sqlalchemy_generic_repository import SqlAlchemyGenericRepository
 from Models.Plagas.plagas import Plags
 from Models.PlagXPlants.plagxplants import Plagsxplants
@@ -19,6 +20,7 @@ from Services.Plagas.plagas_service import Plagas_service
 from Services.PlagxPlants.plagxplants_service import Plagxplants_service
 from Services.User.user_service import User_service
 from Services.Plantaciones.plantaciones_service import Plantaciones_service
+from Services.Roles.roles_service import Roles_service
 
 
 class Container(containers.DeclarativeContainer):
@@ -29,7 +31,8 @@ class Container(containers.DeclarativeContainer):
             "Controllers.Plantas.plantas_controller",
             "Controllers.Plagas.plagas_controller",
             "Controllers.PlagXPlants.plagxplants_controller",
-            "Controllers.Plantaciones.plantaciones_controller"
+            "Controllers.Plantaciones.plantaciones_controller",
+            "Controllers.Roles.roles_controller"
             
             
             
@@ -124,4 +127,15 @@ class Container(containers.DeclarativeContainer):
     plantaciones_service = providers.Factory(
         Plantaciones_service,
         repository=generic_repository_plantaciones
+    )
+    
+    generic_repository_roles = providers.Factory(
+        SqlAlchemyGenericRepository,
+        db_context=db.provided,
+        entity=Roles
+    )
+
+    roles_service = providers.Factory(
+        Roles_service,
+        repository=generic_repository_roles
     )

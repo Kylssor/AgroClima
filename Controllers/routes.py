@@ -6,6 +6,7 @@ from Controllers.Plantas.plantasCat_controller import plantasCat_router
 from Controllers.Plagas.plagas_controller import plagas_router
 from Controllers.PlagXPlants.plagxplants_controller import plagsxplants_router
 from Controllers.Plantaciones.plantaciones_controller import plantaciones_router
+from Controllers.Roles.roles_controller import roles_router
 
 routers = APIRouter()
 router_list = [
@@ -14,7 +15,8 @@ router_list = [
     plantasCat_router,
     plagas_router,
     plagsxplants_router,
-    plantaciones_router
+    plantaciones_router,
+    roles_router
     
     
 ]

@@ -37,6 +37,7 @@ class Plagxplants_service():
         Uuid_helper.check_valid_uuid(data.id)
         
         entity = Plagsxplants(
+            id=data.id,
             plagas_id=data.plagas_id,
             plantas_id=data.plantas_id
         )
