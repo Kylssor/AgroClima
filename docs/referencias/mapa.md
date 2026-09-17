@@ -18,6 +18,7 @@
 | `.env.example` (raíz) | Plantilla de variables que necesita `project_config.py`; copiar a `.env` en la raíz y completar |
 | `backend/Continair/container.py` | Contenedor DI (`dependency-injector`). Por entidad: provider de repo genérico + provider de service. `wiring_config.modules` debe incluir cada controller |
 | `backend/Controllers/routes.py` | Registra todos los `APIRouter` de `Controllers/*` |
+| `backend/Controllers/Alertas/alertas_controller.py` | Endpoint agregador `GET /api/Alertas?dias_proximos=3`, sin Model/Schema propios — reutiliza `RecordatorioCuidado_service.get_alertas(user_id, dias_proximos)` para listar recordatorios vencidos/próximos de todas las plantaciones del usuario autenticado |
 | `alembic.ini` (raíz) + `database/Migrations/env.py` | Config Alembic: `script_location = database/Migrations`, `prepend_sys_path = backend`. Se corre desde la raíz del repo (`alembic upgrade head`, `alembic revision --autogenerate -m "..."`) |
 | `database/Migrations/versions/` | Migraciones en orden cronológico por nombre de archivo (hash + descripción `agroclima1_1_x`); la última define el estado actual del esquema |
 
@@ -35,13 +36,21 @@ si hay que agregar una entidad nueva.
 | Plaga x Planta (relación) | `backend/Controllers/PlagXPlants/plagxplants_controller.py` | `backend/Services/PlagxPlants/plagxplants_service.py` | `backend/Models/PlagXPlants/plagxplants.py` | `backend/Schemas/PlagxPlants/plagxplants_schema.py` |
 | Plantaciones | `backend/Controllers/Plantaciones/plantaciones_controller.py` | `backend/Services/Plantaciones/plantaciones_service.py` | `backend/Models/Plantaciones/plantaciones.py` | `backend/Schemas/Plantaciones/plantaciones_schema.py` |
 | Roles | `backend/Controllers/Roles/roles_controller.py` | `backend/Services/Roles/roles_service.py` | `backend/Models/Roles/roles.py`, `backend/Models/Roles/rolesTy.py` | `backend/Schemas/Roles/roles_schema.py` |
-| Recordatorios de cuidado | (sin controller/service propio todavía) | — | `backend/Models/RecordatoriosCuidados/recordCui.py` | — |
+| Recordatorios de cuidado | `backend/Controllers/RecordatoriosCuidados/recordatorios_cuidados_controller.py` | `backend/Services/RecordatoriosCuidados/recordatorio_cuidado_service.py` (`RecordatorioCuidado_service`) | `backend/Models/RecordatoriosCuidados/recordCui.py` (`RecordCui`) | `backend/Schemas/RecordatoriosCuidados/recordatorio_cuidado_schema.py` (`RecordatorioCuidado_schema`) |
+| Sintoma de planta | `backend/Controllers/SintomaPlanta/sintoma_planta_controller.py` | `backend/Services/SintomaPlanta/sintoma_planta_service.py` (`SintomaPlanta_service`) | `backend/Models/SintomaPlanta/sintoma_planta.py` (`Sintoma_Planta`, tabla `sintoma_planta`) | `backend/Schemas/SintomaPlanta/sintoma_planta_schema.py` (`SintomaPlanta_schema`) |
 
 Nota: la carpeta "PlagxPlants" tiene casing inconsistente entre capas
 (`backend/Controllers/PlagXPlants` y `backend/Models/PlagXPlants` con X
 mayúscula, vs `backend/Services/PlagxPlants` y `backend/Schemas/PlagxPlants`
 con x minúscula). Es así en el repo real, no es error de este mapa —
 cuidado al escribir imports.
+
+Nota: `Plantaciones` y `Recordatorios de cuidado` filtran TODAS sus
+operaciones (`get_all`, `get_by_id`, `update`, `delete`, y en el caso de
+recordatorios también `create`) por el `user_id` del usuario autenticado
+(dueño de la plantación). No es una validación superflua para quitar
+"por simplicidad" — sin ella un usuario podría leer/editar plantaciones o
+recordatorios de otro usuario.
 
 ## Infraestructura compartida
 | Archivo | Qué hay |

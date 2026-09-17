@@ -23,7 +23,7 @@ auth_service = container.authentication_service()
 @plagsxplants_router.get("/", response_model=list[Plagsxplants])
 @inject
 async def get_all(
-    service: Plagxplants_service = Depends(Provide[Container.plagas_service])
+    service: Plagxplants_service = Depends(Provide[Container.plagsxplants_service])
 ):
     return service.get_all()
 
@@ -32,7 +32,7 @@ async def get_all(
 @inject
 async def get_by_id(
     id: uuid.UUID,
-    service: Plagxplants_service = Depends(Provide[Container.plantas_service])
+    service: Plagxplants_service = Depends(Provide[Container.plagsxplants_service])
 ):
     return service.get_by_id(id)
 
@@ -42,7 +42,7 @@ async def get_by_id(
 async def create(
     data: PlagxPlants_schema,
     user: Annotated[User, Depends(auth_service.check_session)],
-    service: Plagxplants_service = Depends(Provide[Container.plagas_service])
+    service: Plagxplants_service = Depends(Provide[Container.plagsxplants_service])
 ):
     return service.create(data)
 
@@ -52,7 +52,7 @@ async def create(
 async def update(
     data: PlagxPlants_schema,
     user: Annotated[User, Depends(auth_service.check_session)],
-    service: Plagxplants_service = Depends(Provide[Container.plagas_service])
+    service: Plagxplants_service = Depends(Provide[Container.plagsxplants_service])
 ):
     return service.update(data)
 
@@ -62,6 +62,6 @@ async def update(
 async def delete(
     id: uuid.UUID,
     user: Annotated[User, Depends(auth_service.check_session)],
-    service: Plagxplants_service = Depends(Provide[Container.plagas_service])
+    service: Plagxplants_service = Depends(Provide[Container.plagsxplants_service])
 ):
     return service.delete(id)

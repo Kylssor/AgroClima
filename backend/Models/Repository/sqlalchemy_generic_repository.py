@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from Contracts.abc_generic_repository import AbcGenericRepository
@@ -9,6 +10,8 @@ from sqlalchemy.orm import joinedload
 from typing import Callable, TypeVar, Generic
 
 from Models.Context.sqlalchemy_context import SqlalchemyContext
+
+logger = logging.getLogger(__name__)
 
 Entity = TypeVar("Entity", bound=Base_Model)
 
@@ -51,14 +54,15 @@ class SqlAlchemyGenericRepository(AbcGenericRepository, Generic[Entity]):
 
     def add(self, entity: type[Entity]):
         with self.db_context.session() as session:
-            query = self.entity = entity
+            query = entity
             try:
                 session.add(query)
                 session.commit()
                 session.refresh(query)
             except IntegrityError as e:
                 session.rollback()
-                raise DuplicatedErrorException(detail=str(e.orig))
+                logger.warning("Integrity error inserting %s: %s", self.entity.__name__, e.orig)
+                raise DuplicatedErrorException(detail="Ya existe un registro con esos datos.")
             return query
 
 

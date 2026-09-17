@@ -23,18 +23,20 @@ auth_service = container.authentication_service()
 @plantaciones_router.get("/", response_model=list[Plants_mp])
 @inject
 async def get_all(
+    user: Annotated[User, Depends(auth_service.check_session)],
     service: Plantaciones_service = Depends(Provide[Container.plantaciones_service])
 ):
-    return service.get_all()
+    return service.get_all(user.id)
 
 
 @plantaciones_router.get("/{id}", response_model=Plants_mp)
 @inject
 async def get_by_id(
     id: uuid.UUID,
+    user: Annotated[User, Depends(auth_service.check_session)],
     service: Plantaciones_service = Depends(Provide[Container.plantaciones_service])
 ):
-    return service.get_by_id(id)
+    return service.get_by_id(id, user.id)
 
 
 @plantaciones_router.post("/", response_model=Plants_mp)
@@ -44,7 +46,7 @@ async def create(
     user: Annotated[User, Depends(auth_service.check_session)],
     service: Plantaciones_service = Depends(Provide[Container.plantaciones_service])
 ):
-    return service.create(data)
+    return service.create(data, user.id)
 
 
 @plantaciones_router.patch("/", response_model=Plants_mp)
@@ -54,7 +56,7 @@ async def update(
     user: Annotated[User, Depends(auth_service.check_session)],
     service: Plantaciones_service = Depends(Provide[Container.plantaciones_service])
 ):
-    return service.update(data)
+    return service.update(data, user.id)
 
 
 @plantaciones_router.delete("/{id}", status_code=204)
@@ -64,4 +66,4 @@ async def delete(
     user: Annotated[User, Depends(auth_service.check_session)],
     service: Plantaciones_service = Depends(Provide[Container.plantaciones_service])
 ):
-    return service.delete(id)
+    return service.delete(id, user.id)

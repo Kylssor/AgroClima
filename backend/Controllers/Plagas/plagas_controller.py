@@ -32,7 +32,7 @@ async def get_all(
 @inject
 async def get_by_id(
     id: uuid.UUID,
-    service: Plagas_service = Depends(Provide[Container.plantas_service])
+    service: Plagas_service = Depends(Provide[Container.plagas_service])
 ):
     return service.get_by_id(id)
 

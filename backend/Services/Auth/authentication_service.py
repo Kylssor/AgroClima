@@ -5,6 +5,7 @@ from fastapi import Depends
 from Config.project_config import Project_config
 from Exceptions.app_exception import AppException
 from Exceptions.unauthorized_exception import UnauthorizedException
+from Helpers.password_helper import Password_helper
 from Helpers.validate_helper import Validate_helper
 from Models.User.user import User
 from Schemas.Auth.sign_in_schema import Sign_in_schema
@@ -33,7 +34,7 @@ class Authentication_service():
         if not user:
             raise UnauthorizedException("El correo electrónico proporcionado no está asociado con ninguna cuenta registrada. Por favor, verifique su correo electrónico o regístrese para crear una cuenta nueva.")
         
-        if user.password != sing_in_data.password:
+        if not Password_helper.verify(sing_in_data.password, user.password):
             raise UnauthorizedException("La contraseña proporcionada es incorrecta. Por favor, inténtelo de nuevo.")
         
         data={"id": str(user.id)}
@@ -54,7 +55,7 @@ class Authentication_service():
             name = user_data.name,
             last_name = user_data.last_name,
             email= user_data.email,
-            password = user_data.password
+            password = Password_helper.hash(user_data.password)
         )
         
         return self.user_service.create(entity)

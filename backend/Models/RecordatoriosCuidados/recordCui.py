@@ -7,6 +7,8 @@ from Models.Base.Base_model import Base_Model
 
 
 class RecordCui(Base_Model, table=True):
-    fecha_hora: datetime =  Field(default=None, nullable=False)
-    record: str = Field(default=None, nullable=False, max_length= 100)
-    Plantas_id: uuid.UUID = Field(default=None, nullable=False, foreign_key="plantas.id")
+    plantacion_id: uuid.UUID = Field(default=None, nullable=False, foreign_key="plants_mp.id")
+    tipo_cuidado: str = Field(default=None, nullable=False, max_length=50)
+    frecuencia_dias: int = Field(default=None, nullable=False)
+    proxima_fecha: datetime = Field(default=None, nullable=False)
+    activo: bool = Field(default=None, nullable=False)

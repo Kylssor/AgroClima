@@ -1,19 +1,22 @@
 from decimal import Decimal
+from typing import Optional
 import uuid
 from pydantic import BaseModel, Field
 
 
 class Plantaciones_schema(BaseModel):
-    id: uuid.UUID = Field(default=None, nullable=True)
+    id: Optional[uuid.UUID] = Field(default=None, nullable=True)
+    direction: Optional[str] = Field(default="", nullable=True, max_length=100)
     latitude: Decimal =  Field(default=None, nullable=False)
     longitude: Decimal =  Field(default=None, nullable=False)
     plants_id: uuid.UUID = Field(default=None, nullable=False, foreign_key="plantas.id")
     name: str = Field(default=None, nullable=False, max_length= 50)
-    
-    
+
+
     class Config:
         json_schema_extra = {
             "example":{
+                "direction": "Vereda El Progreso, finca La Esperanza",
                 "latitude": "4.5982702",
                 "longitude": "74.1357403",
                 "name": "Arroz",

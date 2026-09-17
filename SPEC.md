@@ -72,31 +72,42 @@ poda / otro), frecuencia_dias, proxima_fecha, activo.
   síntoma corresponde a una plaga conocida (vía `PlagaPlanta`), también la
   prevención de esa plaga.
 
-## Endpoints esperados (backend)
+## Endpoints (backend) — estado real
 ```
-POST   /auth/signUp
-POST   /auth/signIn                    → devuelve JWT
-POST   /auth/signOut
-POST   /auth/checkSession
+POST   /api/auth/signUp
+POST   /api/auth/signIn                        → devuelve JWT
+POST   /api/auth/signOut
+POST   /api/auth/checkSession
 
-GET    /Plantas                        → catálogo de tipos de planta
-GET    /Plantas/{id}
-GET    /Plantas/{id}/sintomas          → ficha de síntomas/recomendaciones [NUEVO]
+GET    /api/Plantas                            → catálogo de tipos de planta
+GET    /api/Plantas/{id}
 
-GET    /Plagas                         → catálogo de plagas
-GET    /Plagas/{id}
-GET    /PlagXPlants?planta_id={id}     → plagas de una planta, con prevención
+GET    /api/SintomasPlanta?planta_id={id}      → ficha de síntomas/recomendaciones de una planta [HECHO]
+GET    /api/SintomasPlanta/{id}
+POST   /api/SintomasPlanta                     [HECHO]
+PATCH  /api/SintomasPlanta                     [HECHO]
+DELETE /api/SintomasPlanta/{id}                [HECHO]
 
-GET    /Plantaciones                   → plantaciones del usuario autenticado
-POST   /Plantaciones                   → registrar plantación (elige un tipo de Planta)
-DELETE /Plantaciones/{id}
+GET    /api/Plagas                             → catálogo de plagas
+GET    /api/Plagas/{id}
+GET    /api/Plagsxplants                       → plagas asociadas a plantas (con prevención)
 
-GET    /RecordatoriosCuidados?plantacion_id={id}   [NUEVO — falta implementar]
-POST   /RecordatoriosCuidados                       [NUEVO]
-PATCH  /RecordatoriosCuidados/{id}                  → marcar cumplido / reprogramar [NUEVO]
+GET    /api/Plantaciones                       → plantaciones del usuario autenticado [ahora sí filtra por dueño]
+GET    /api/Plantaciones/{id}
+POST   /api/Plantaciones                       → registrar plantación (elige un tipo de Planta)
+PATCH  /api/Plantaciones
+DELETE /api/Plantaciones/{id}
 
-GET    /Alertas                        → recordatorios vencidos/próximos del usuario [NUEVO, agregador]
+GET    /api/RecordatoriosCuidados?plantacion_id={id}   [HECHO]
+POST   /api/RecordatoriosCuidados                       [HECHO]
+PATCH  /api/RecordatoriosCuidados/{id}/cumplido         → marcar cumplido, reprograma proxima_fecha [HECHO]
+DELETE /api/RecordatoriosCuidados/{id}                  [HECHO]
+
+GET    /api/Alertas?dias_proximos=3            → recordatorios vencidos/próximos del usuario [HECHO, agregador]
 ```
+Todas las rutas de escritura (`POST`/`PATCH`/`DELETE`) requieren sesión
+(JWT). Las de `Plantaciones` y `RecordatoriosCuidados` además verifican
+que el recurso pertenezca al usuario autenticado — si no, responden 401.
 
 ## Pantallas esperadas (frontend — todavía no existe código de frontend)
 1. Login / Registro (incluye ciudad o región)
@@ -114,6 +125,22 @@ GET    /Alertas                        → recordatorios vencidos/próximos del 
   tiempo). No es el objetivo del producto.
 - Notificaciones push/email de los recordatorios (por ahora se consultan
   vía `GET /Alertas`).
+
+## Riesgos de seguridad conocidos (pendientes, no bloqueantes para v1)
+Detectados en la auditoría del agente `revisor`, documentados a propósito
+para que no se pierdan — requieren más diseño del que cabía en el alcance
+de esta iteración:
+- **Sin roles/permisos**: cualquier usuario autenticado puede crear,
+  editar o borrar los catálogos globales (`Roles`, `Plagas`, `PlagXPlants`,
+  `SintomaPlanta`), que son compartidos por todos. Falta un rol de
+  administrador antes de exponer esto públicamente.
+- **Sin rate limiting** en `POST /auth/signIn` / `signUp` — no hay límite
+  de intentos a nivel de aplicación.
+- Varios `response_model` devuelven directamente el modelo SQLModel de la
+  tabla (`Plants_mp`, `Plags`, `Plagsxplants`, `RecordCui`,
+  `Sintoma_Planta`, `Roles`) en vez de un schema de salida dedicado — hoy
+  no exponen nada sensible, pero cualquier columna nueva que se agregue a
+  esas tablas se expondría automáticamente sin decisión explícita.
 
 ## Definición de "terminado" para cada agente
 - Backend: endpoint responde con el formato correcto, tiene manejo de

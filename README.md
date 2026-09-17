@@ -32,7 +32,11 @@ Todos los comandos se corren desde la raíz del repo.
    cp .env.example .env
    ```
    y completar `.env` con los datos reales de tu base de datos (`DB_ENGINE`,
-   `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
+   `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`), un
+   `JWT_SECRET_KEY` propio (generarlo con
+   `python -c "import secrets; print(secrets.token_hex(32))"` — el server
+   no arranca sin esto) y, cuando exista frontend, `CORS_ORIGINS` con los
+   orígenes permitidos separados por comas (vacío = ninguno).
 3. Correr las migraciones:
    ```
    alembic upgrade head
@@ -46,7 +50,10 @@ Todos los comandos se corren desde la raíz del repo.
 
 ## Notas
 - No hay suite de tests automatizados todavía.
-- No se pudo verificar este flujo de arranque de punta a punta en esta
-  máquina por falta de un intérprete de Python instalado; los comandos
-  están validados por revisión estática de la configuración (rutas de
-  `alembic.ini` y de `project_config.py`), no por ejecución real.
+- Las contraseñas se guardan hasheadas con bcrypt (`passlib`). El JWT
+  usa `JWT_SECRET_KEY` del `.env` — no hay un valor por defecto en el
+  código a propósito, para no repetir el error de tener un secreto
+  hardcodeado y commiteado.
+- Riesgos de seguridad conocidos y pendientes (sin rol de administrador
+  para los catálogos globales, sin rate limiting en login, etc.): ver la
+  sección "Riesgos de seguridad conocidos" en [`SPEC.md`](./SPEC.md).

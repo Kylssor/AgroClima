@@ -20,6 +20,12 @@ class Project_config(BaseSettings):
     __DB_ENGINE: str = os.getenv("DB_ENGINE")
     __DB_NAME: str = os.getenv("DB_NAME")
 
+    # auth
+    __SECRET_KEY: str = os.getenv("JWT_SECRET_KEY")
+
+    # CORS: lista separada por comas, ej. "https://miapp.com,http://localhost:5173"
+    __CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "")
+
 
     # base
     @staticmethod
@@ -32,14 +38,27 @@ class Project_config(BaseSettings):
         return "/api"
 
 
-    # CORS
+    # CORS: nunca "*" junto con allow_credentials=True — eso hace que el
+    # navegador acepte credenciales desde cualquier origen. Configurar
+    # CORS_ORIGINS en el .env con los orígenes reales del frontend.
     @staticmethod
     def BACKEND_CORS_ORIGINS() -> list[str]:
-        return ["*"]
+        # Los atributos "__x" son privados para pydantic: solo se resuelven
+        # a su valor real sobre una instancia, no accedidos desde la clase.
+        origins = Project_config().__CORS_ORIGINS
+        if not origins:
+            return []
+        return [origin.strip() for origin in origins.split(",") if origin.strip()]
 
     @staticmethod
     def SECRET_KEY() -> str:
-        return "c8c7f20675d8fa425e9e202c8485bea947c30c99019472fecf7ab7a40edd3366"
+        secret = Project_config().__SECRET_KEY
+        if not secret:
+            raise RuntimeError(
+                "Falta JWT_SECRET_KEY en el .env. Generar uno con: "
+                "python -c \"import secrets; print(secrets.token_hex(32))\""
+            )
+        return secret
 
 
     @staticmethod
@@ -54,12 +73,6 @@ class Project_config(BaseSettings):
 
     @property
     def DATABASE_URI(self) -> str:
-        print(self.__DB_HOST)
-        print(self.__DB_USER)
-        print(self.__DB_PASSWORD)
-        print(self.__DB_PORT)
-        print(self.__DB_ENGINE)
-        print(self.__DB_NAME)
         return self.__DATABASE_URI_FORMAT.format(
             db_engine=self.__DB_ENGINE,
             user=self.__DB_USER,

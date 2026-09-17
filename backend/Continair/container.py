@@ -11,6 +11,8 @@ from Models.Plagas.plagas import Plags
 from Models.PlagXPlants.plagxplants import Plagsxplants
 from Models.Plantaciones.plantaciones import Plants_mp
 from Models.Token.token_blacklist import Token_blacklist
+from Models.RecordatoriosCuidados.recordCui import RecordCui
+from Models.SintomaPlanta.sintoma_planta import Sintoma_Planta
 from Models.User.user import User
 from Services.Auth.authentication_service import Authentication_service
 from Services.Cryptography.token_service import Token_service
@@ -18,6 +20,8 @@ from Services.Plantas.plantas_service import Plantas_service
 from Services.Plantas.plantasCat_service import PlantasCat_service
 from Services.Plagas.plagas_service import Plagas_service
 from Services.PlagxPlants.plagxplants_service import Plagxplants_service
+from Services.RecordatoriosCuidados.recordatorio_cuidado_service import RecordatorioCuidado_service
+from Services.SintomaPlanta.sintoma_planta_service import SintomaPlanta_service
 from Services.User.user_service import User_service
 from Services.Plantaciones.plantaciones_service import Plantaciones_service
 from Services.Roles.roles_service import Roles_service
@@ -32,10 +36,10 @@ class Container(containers.DeclarativeContainer):
             "Controllers.Plagas.plagas_controller",
             "Controllers.PlagXPlants.plagxplants_controller",
             "Controllers.Plantaciones.plantaciones_controller",
-            "Controllers.Roles.roles_controller"
-            
-            
-            
+            "Controllers.Roles.roles_controller",
+            "Controllers.RecordatoriosCuidados.recordatorios_cuidados_controller",
+            "Controllers.SintomaPlanta.sintoma_planta_controller",
+            "Controllers.Alertas.alertas_controller",
         ]
     )
     
@@ -138,4 +142,27 @@ class Container(containers.DeclarativeContainer):
     roles_service = providers.Factory(
         Roles_service,
         repository=generic_repository_roles
+    )
+
+    generic_repository_recordatorios_cuidados = providers.Factory(
+        SqlAlchemyGenericRepository,
+        db_context=db.provided,
+        entity=RecordCui
+    )
+
+    recordatorios_cuidados_service = providers.Factory(
+        RecordatorioCuidado_service,
+        repository=generic_repository_recordatorios_cuidados,
+        plantaciones_repository=generic_repository_plantaciones,
+    )
+
+    generic_repository_sintoma_planta = providers.Factory(
+        SqlAlchemyGenericRepository,
+        db_context=db.provided,
+        entity=Sintoma_Planta
+    )
+
+    sintoma_planta_service = providers.Factory(
+        SintomaPlanta_service,
+        repository=generic_repository_sintoma_planta
     )
