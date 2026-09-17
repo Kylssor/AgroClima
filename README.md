@@ -17,7 +17,7 @@ completa y [`CLAUDE.md`](./CLAUDE.md) para la arquitectura del código.
 /database     → Migrations/ (alembic.ini vive en la raíz del repo)
 /frontend     → todavía no existe código de frontend
 /docs         → documentación, incluye /docs/referencias (índice para agentes)
-/tests        → todavía vacío, no hay suite de tests
+/tests        → suite de pytest
 ```
 
 ## Cómo correr el proyecto desde cero
@@ -48,12 +48,19 @@ Todos los comandos se corren desde la raíz del repo.
    La API queda disponible en `http://localhost:8000`, bajo el prefijo
    `/api`.
 
+## Correr los tests
+```
+pytest
+```
+Corren contra SQLite temporal, sin necesidad de Postgres ni de un `.env`
+real. Ver [`tests/README.md`](./tests/README.md) para el alcance y sus
+límites (son tests de lógica de negocio, no HTTP end-to-end).
+
 ## Notas
-- No hay suite de tests automatizados todavía.
 - Las contraseñas se guardan hasheadas con bcrypt (`passlib`). El JWT
   usa `JWT_SECRET_KEY` del `.env` — no hay un valor por defecto en el
   código a propósito, para no repetir el error de tener un secreto
   hardcodeado y commiteado.
 - Riesgos de seguridad conocidos y pendientes (sin rol de administrador
-  para los catálogos globales, sin rate limiting en login, etc.): ver la
-  sección "Riesgos de seguridad conocidos" en [`SPEC.md`](./SPEC.md).
+  para los catálogos globales, etc.): ver la sección "Riesgos de
+  seguridad conocidos" en [`SPEC.md`](./SPEC.md).

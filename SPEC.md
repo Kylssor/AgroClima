@@ -128,19 +128,24 @@ que el recurso pertenezca al usuario autenticado — si no, responden 401.
 
 ## Riesgos de seguridad conocidos (pendientes, no bloqueantes para v1)
 Detectados en la auditoría del agente `revisor`, documentados a propósito
-para que no se pierdan — requieren más diseño del que cabía en el alcance
-de esta iteración:
+para que no se pierdan:
 - **Sin roles/permisos**: cualquier usuario autenticado puede crear,
   editar o borrar los catálogos globales (`Roles`, `Plagas`, `PlagXPlants`,
-  `SintomaPlanta`), que son compartidos por todos. Falta un rol de
-  administrador antes de exponer esto públicamente.
-- **Sin rate limiting** en `POST /auth/signIn` / `signUp` — no hay límite
-  de intentos a nivel de aplicación.
+  `SintomaPlanta`), que son compartidos por todos. El modelo `Roles` ya
+  funciona (ver abajo) pero todavía no se usa para restringir nada — falta
+  decidir cómo se asigna el primer administrador antes de construir el
+  gate de permisos.
 - Varios `response_model` devuelven directamente el modelo SQLModel de la
   tabla (`Plants_mp`, `Plags`, `Plagsxplants`, `RecordCui`,
   `Sintoma_Planta`, `Roles`) en vez de un schema de salida dedicado — hoy
   no exponen nada sensible, pero cualquier columna nueva que se agregue a
   esas tablas se expondría automáticamente sin decisión explícita.
+
+Ya resueltos en esta iteración: contraseñas hasheadas, `JWT_SECRET_KEY`
+fuera del código, CORS restringido, rate limiting básico en
+`signIn`/`signUp`, y el bug de `Roles`/`User` que hacía imposible crear un
+usuario contra Postgres real (FK circular `user.roles` ↔ `roles.user`
+con ambos lados `NOT NULL` desde la migración original).
 
 ## Definición de "terminado" para cada agente
 - Backend: endpoint responde con el formato correcto, tiene manejo de

@@ -11,7 +11,8 @@ from Models.User.user import User
 class Roles(Base_Model, table=True):
 
     name: str = Field(default=None, nullable=False, max_length= 100)
-    rolesty_id: uuid.UUID = Field(default=None, nullable=False, foreign_key="rolesty.id")
+    user: uuid.UUID = Field(default=None, nullable=False, foreign_key="user.id")
+    rolesty: uuid.UUID = Field(default=None, nullable=False, foreign_key="rolesty.id")
 
 
     roles_Ty: Optional[RolesTy] = Relationship(back_populates="roles")

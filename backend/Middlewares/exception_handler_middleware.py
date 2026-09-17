@@ -6,6 +6,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from Exceptions.app_exception import AppException
 from Exceptions.duplicated_error_exception import DuplicatedErrorException
 from Exceptions.not_found_error_exception import NotFoundErrorException
+from Exceptions.too_many_requests_exception import TooManyRequestsException
 from Exceptions.unauthorized_exception import UnauthorizedException
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,11 @@ class Exception_Handler_Middleware(BaseHTTPMiddleware):
             return JSONResponse(
                 status_code=401,
                 content={"error": "Unauthorized", "message": str(app_exception)},
+            )
+        except TooManyRequestsException as app_exception:
+            return JSONResponse(
+                status_code=429,
+                content={"error": "Too Many Requests", "message": str(app_exception)},
             )
         except Exception as e:
             logger.exception(e)

@@ -8,7 +8,8 @@
 > `main.py`, `requirements.txt`). Las migraciones viven en
 > `/database/Migrations`. `alembic.ini` se quedó en la raíz del repo
 > (con `script_location = database/Migrations` y `prepend_sys_path =
-> backend`). `/frontend` y `/tests` siguen vacíos.
+> backend`). `/tests` ya tiene una suite de pytest (ver más abajo).
+> `/frontend` sigue vacío.
 
 ## Entrypoint y configuración
 | Archivo | Qué hay |
@@ -21,6 +22,7 @@
 | `backend/Controllers/Alertas/alertas_controller.py` | Endpoint agregador `GET /api/Alertas?dias_proximos=3`, sin Model/Schema propios — reutiliza `RecordatorioCuidado_service.get_alertas(user_id, dias_proximos)` para listar recordatorios vencidos/próximos de todas las plantaciones del usuario autenticado |
 | `alembic.ini` (raíz) + `database/Migrations/env.py` | Config Alembic: `script_location = database/Migrations`, `prepend_sys_path = backend`. Se corre desde la raíz del repo (`alembic upgrade head`, `alembic revision --autogenerate -m "..."`) |
 | `database/Migrations/versions/` | Migraciones en orden cronológico por nombre de archivo (hash + descripción `agroclima1_1_x`); la última define el estado actual del esquema |
+| `database/Migrations/versions/16bb9f2f8187_agroclima1_1_9.py` | Última migración: relaja `user.roles` a NULLABLE. Corrige la FK circular `user.roles`/`roles.user` (ambos `NOT NULL` en el modelo original) que hacía imposible crear un usuario nuevo — ver detalle en `docs/referencias/esquema-db.md` |
 
 ## Por entidad (patrón Controller → Service → Model → Schema)
 Todas las entidades siguen el mismo patrón; usar `Plagas` como referencia
@@ -35,7 +37,7 @@ si hay que agregar una entidad nueva.
 | Plagas | `backend/Controllers/Plagas/plagas_controller.py` | `backend/Services/Plagas/plagas_service.py` | `backend/Models/Plagas/plagas.py` | `backend/Schemas/Plagas/plagas_schema.py` |
 | Plaga x Planta (relación) | `backend/Controllers/PlagXPlants/plagxplants_controller.py` | `backend/Services/PlagxPlants/plagxplants_service.py` | `backend/Models/PlagXPlants/plagxplants.py` | `backend/Schemas/PlagxPlants/plagxplants_schema.py` |
 | Plantaciones | `backend/Controllers/Plantaciones/plantaciones_controller.py` | `backend/Services/Plantaciones/plantaciones_service.py` | `backend/Models/Plantaciones/plantaciones.py` | `backend/Schemas/Plantaciones/plantaciones_schema.py` |
-| Roles | `backend/Controllers/Roles/roles_controller.py` | `backend/Services/Roles/roles_service.py` | `backend/Models/Roles/roles.py`, `backend/Models/Roles/rolesTy.py` | `backend/Schemas/Roles/roles_schema.py` |
+| Roles | `backend/Controllers/Roles/roles_controller.py` | `backend/Services/Roles/roles_service.py` | `backend/Models/Roles/roles.py` (campos `user` FK→`user.id` y `rolesty` FK→`rolesty.id`, no `rolesty_id`), `backend/Models/Roles/rolesTy.py` | `backend/Schemas/Roles/roles_schema.py` |
 | Recordatorios de cuidado | `backend/Controllers/RecordatoriosCuidados/recordatorios_cuidados_controller.py` | `backend/Services/RecordatoriosCuidados/recordatorio_cuidado_service.py` (`RecordatorioCuidado_service`) | `backend/Models/RecordatoriosCuidados/recordCui.py` (`RecordCui`) | `backend/Schemas/RecordatoriosCuidados/recordatorio_cuidado_schema.py` (`RecordatorioCuidado_schema`) |
 | Sintoma de planta | `backend/Controllers/SintomaPlanta/sintoma_planta_controller.py` | `backend/Services/SintomaPlanta/sintoma_planta_service.py` (`SintomaPlanta_service`) | `backend/Models/SintomaPlanta/sintoma_planta.py` (`Sintoma_Planta`, tabla `sintoma_planta`) | `backend/Schemas/SintomaPlanta/sintoma_planta_schema.py` (`SintomaPlanta_schema`) |
 
@@ -64,6 +66,9 @@ recordatorios de otro usuario.
 | `backend/Middlewares/exception_handler_middleware.py` | Mapea las excepciones de `Exceptions/` a códigos HTTP (400/404/409/401/500) |
 | `backend/Helpers/uuid_helper.py` | Valida UUIDs (`Uuid_helper.check_valid_uuid`) — usar antes de `get_by_id`/`update`/`delete` en services |
 | `backend/Helpers/validate_helper.py` | Validaciones varias (ej. email) |
+| `backend/Helpers/password_helper.py` | `Password_helper`: hash/verify de contraseñas con bcrypt (`passlib`), usado desde `Services/Auth/authentication_service.py` |
+| `backend/Helpers/rate_limiter.py` | `RateLimiter`: rate limiting en memoria por proceso (no sirve con varios workers, documentado en el propio archivo); usado en `POST /auth/signIn` (5/5min) y `POST /auth/signUp` (10/1h) desde `auth_controller.py` |
+| `backend/Exceptions/too_many_requests_exception.py` | `TooManyRequestsException`, mapeada a 429 en `exception_handler_middleware.py`; la lanza `RateLimiter` |
 | `backend/Utils/singleton.py` | Decorador singleton |
 | `backend/requirements.txt` | Dependencias Python (UTF-8; antes estaba en UTF-16, ya corregido) |
 
@@ -75,6 +80,13 @@ recordatorios de otro usuario.
 | `docs/referencias/esquema-db.md` | Tablas y relaciones clave (a crear/mantener por el agente docs) |
 | `docs/referencias/componentes.md` | N/A en este proyecto (no hay frontend implementado todavía) |
 | `README.md` (raíz) | Instrucciones de instalación/arranque desde cero |
+
+## Tests (/tests)
+| Archivo | Qué hay |
+|---|---|
+| `tests/README.md` | Explica por qué son tests de service (no HTTP end-to-end) y sus límites — leer ahí antes de asumir cobertura E2E |
+| `tests/conftest.py` | Fixtures: BD SQLite temporal + repos |
+| `tests/test_generic_repository.py`, `test_plagas.py`, `test_roles.py`, `test_auth.py`, `test_plantaciones.py`, `test_recordatorios_y_alertas.py`, `test_sintoma_planta.py`, `test_app_wiring.py` | Un archivo de test por área. Se corren con `pytest` desde la raíz del repo (26 tests) |
 
 ## Nota sobre imports
 Los imports internos del código siguen siendo del estilo `from Config.x
