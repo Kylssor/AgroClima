@@ -1,10 +1,13 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from fastapi.security import OAuth2PasswordBearer
 from pydantic_settings import BaseSettings
 
 
-env_path = '../.env'
+# Repo root, regardless of the working directory the app is started from
+# (this file lives at <repo_root>/backend/Config/project_config.py).
+env_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(dotenv_path=env_path)
 
 class Project_config(BaseSettings):
