@@ -165,3 +165,19 @@ cython_debug/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# IDE - JetBrains
+.idea/
+
+# Claude Code: permisos locales de cada máquina, no del proyecto
+.claude/settings.local.json
+
+# Bases de datos locales / temporales de los tests
+*.db
+*.sqlite
+*.sqlite3
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini

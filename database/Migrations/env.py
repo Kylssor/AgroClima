@@ -11,6 +11,8 @@ from Models.Plantaciones.plantaciones import Plants_mp
 from Models.RecordatoriosCuidados.recordCui import RecordCui
 from Models.Roles.roles import Roles
 from Models.Roles.rolesTy import RolesTy
+from Models.SintomaPlanta.sintoma_planta import Sintoma_Planta
+from Models.Token.token_blacklist import Token_blacklist
 from Models.User.user import User
 
 from alembic import context
