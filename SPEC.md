@@ -1,8 +1,8 @@
 # Especificación: AgroClima
 
-Este documento es la fuente de verdad del proyecto. Todos los agentes deben
-apegarse a esto. Si algo no está claro aquí, pregúntale al usuario antes de
-inventar comportamiento.
+Este documento es la fuente de verdad del proyecto: lo que esté acá manda
+sobre cualquier otra referencia. Si algo no está definido, conviene
+resolverlo y documentarlo acá antes de implementarlo.
 
 ## Visión
 App para que un campesino (con una o varias plantaciones, de cualquier
@@ -127,8 +127,8 @@ que el recurso pertenezca al usuario autenticado — si no, responden 401.
   vía `GET /Alertas`).
 
 ## Riesgos de seguridad conocidos (pendientes, no bloqueantes para v1)
-Detectados en la auditoría del agente `revisor`, documentados a propósito
-para que no se pierdan:
+Detectados en una auditoría de seguridad, documentados a propósito para que
+no se pierdan:
 - **Sin roles/permisos**: cualquier usuario autenticado puede crear,
   editar o borrar los catálogos globales (`Roles`, `Plagas`, `PlagXPlants`,
   `SintomaPlanta`), que son compartidos por todos. El modelo `Roles` ya
@@ -147,7 +147,7 @@ fuera del código, CORS restringido, rate limiting básico en
 usuario contra Postgres real (FK circular `user.roles` ↔ `roles.user`
 con ambos lados `NOT NULL` desde la migración original).
 
-## Definición de "terminado" para cada agente
+## Definición de "terminado" por área
 - Backend: endpoint responde con el formato correcto, tiene manejo de
   errores básico (404, 401, 400/409 vía las excepciones ya existentes en
   `Exceptions/`), y tiene al menos una prueba.

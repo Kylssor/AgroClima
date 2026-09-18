@@ -5,8 +5,8 @@ recordatorios de cuidado (riego, fertilización, etc.), alertas de lo que
 está vencido o por vencer, y recomendaciones para prevenir plagas.
 
 - Especificación funcional completa → [`SPEC.md`](./SPEC.md)
-- Arquitectura interna y convenciones de código → [`CLAUDE.md`](./CLAUDE.md)
-- Índice de "qué hay en cada archivo" → [`docs/referencias/mapa.md`](./docs/referencias/mapa.md)
+- Índice de "qué hay en cada archivo" y convenciones de código →
+  [`docs/referencias/mapa.md`](./docs/referencias/mapa.md)
 
 ## Stack
 - Python + FastAPI + SQLModel/SQLAlchemy
@@ -19,7 +19,7 @@ está vencido o por vencer, y recomendaciones para prevenir plagas.
 /backend      → toda la API (Controllers, Services, Models, Schemas, etc.)
 /database     → Migrations/ (alembic.ini vive en la raíz del repo)
 /frontend     → todavía no existe código de frontend
-/docs         → documentación, incluye /docs/referencias (índice para agentes)
+/docs         → documentación, incluye /docs/referencias (índice del repo)
 /tests        → suite de pytest
 ```
 

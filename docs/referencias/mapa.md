@@ -1,7 +1,7 @@
 # Mapa del proyecto
 
-> Índice de navegación. Consulta esto ANTES de explorar con Grep/Glob.
-> No es exhaustivo línea por línea, solo dice dónde está cada cosa.
+> Índice de navegación: conviene mirarlo antes de buscar a mano por todo
+> el repo. No es exhaustivo línea por línea, solo dice dónde está cada cosa.
 > El código Python vive dentro de `/backend` (carpetas PascalCase:
 > `Config`, `Continair`, `Contracts`, `Controllers`, `Exceptions`,
 > `Helpers`, `Middlewares`, `Models`, `Schemas`, `Services`, `Utils`,
@@ -25,7 +25,7 @@
 | `database/Migrations/versions/16bb9f2f8187_agroclima1_1_9.py` | Relaja `user.roles` a NULLABLE. Corrige la FK circular `user.roles`/`roles.user` (ambos `NOT NULL` en el modelo original) que hacía imposible crear un usuario nuevo — ver detalle en `docs/referencias/esquema-db.md` |
 | `database/Migrations/versions/e8d9adf5a163_...token_blacklist.py` | Crea la tabla `token_blacklist` (faltaba por completo contra Postgres — el modelo nunca estuvo importado en `env.py`, así que ningún `autogenerate` anterior la había detectado; rompía `checkSession`/`signOut` con 500 en cualquier entorno real, aunque los tests pasaban porque usan SQLite con `create_all`) |
 | `database/Migrations/versions/a642cd723535_...fix_plags_recom_column.py` | Última migración: renombra `plags.recomenda` → `plags.recom` para que coincida con el modelo (`backend/Models/Plagas/plagas.py`); rompía `GET /api/Plagas` con 500 contra Postgres |
-| `database/Migrations/env.py` | Ahora importa también `Sintoma_Planta` y `Token_blacklist` (antes faltaban, ver arriba). **Nota pendiente**: un `autogenerate` sobre el estado actual todavía va a proponer (a) agregar un `UNIQUE` constraint sobre `sintoma_planta.id` (inofensivo, ya es PK) y (b) **borrar** el constraint `user_email_key` porque `User.email` no tiene `unique=True` en el modelo — la unicidad de email hoy solo se valida en `authentication_service.sign_up` (capa de servicio), no en el modelo. No se tocó a propósito: es una decisión de diseño (mantener o no el constraint a nivel DB), no un bug obvio. Avisarle al agente `database` antes de correr el próximo `autogenerate` a ciegas. |
+| `database/Migrations/env.py` | Ahora importa también `Sintoma_Planta` y `Token_blacklist` (antes faltaban, ver arriba). **Nota pendiente**: un `autogenerate` sobre el estado actual todavía va a proponer (a) agregar un `UNIQUE` constraint sobre `sintoma_planta.id` (inofensivo, ya es PK) y (b) **borrar** el constraint `user_email_key` porque `User.email` no tiene `unique=True` en el modelo — la unicidad de email hoy solo se valida en `authentication_service.sign_up` (capa de servicio), no en el modelo. No se tocó a propósito: es una decisión de diseño (mantener o no el constraint a nivel DB), no un bug obvio. Revisar la migración generada antes de aplicar el próximo `autogenerate`. |
 
 ## Por entidad (patrón Controller → Service → Model → Schema)
 Todas las entidades siguen el mismo patrón; usar `Plagas` como referencia
@@ -79,8 +79,8 @@ recordatorios de otro usuario.
 | Archivo | Qué hay |
 |---|---|
 | `docs/referencias/mapa.md` | Este archivo |
-| `docs/referencias/api.md` | Lista de endpoints (a crear/mantener por el agente docs) |
-| `docs/referencias/esquema-db.md` | Tablas y relaciones clave (a crear/mantener por el agente docs) |
+| `docs/referencias/api.md` | Lista de endpoints |
+| `docs/referencias/esquema-db.md` | Tablas y relaciones clave |
 | `docs/referencias/componentes.md` | N/A en este proyecto (no hay frontend implementado todavía) |
 | `README.md` (raíz) | Instrucciones de instalación/arranque desde cero |
 
@@ -100,9 +100,7 @@ Python normal. No "corregir" estos imports a `from backend.Config...`
 sin avisar, rompería el arranque.
 
 ---
-**Mantenimiento**: este mapa lo mantiene el agente `docs` y debe
-actualizarse cada vez que se agregue una entidad o archivo con
-responsabilidad propia. Si un agente no encuentra algo acá o detecta que
-está desactualizado, debe explorar manualmente esa parte puntual y avisar
-al agente `docs` para que lo actualice — no asumir que el mapa está mal
-para todo el repo.
+**Mantenimiento**: actualizar este mapa cada vez que se agregue una entidad
+o un archivo con responsabilidad propia. Si algo no figura acá o quedó
+desactualizado, revisar esa parte puntual en el código y corregir la
+entrada correspondiente — no asumir que el mapa entero está mal.
